@@ -1,10 +1,10 @@
 // Generated on 2014-03-24 using generator-ember 0.8.3
 'use strict';
-//var LIVERELOAD_PORT = 35729;
-//var lrSnippet = require('connect-livereload')({port: LIVERELOAD_PORT});
-//var mountFolder = function (connect, dir) {
-//    return connect.static(require('path').resolve(dir));
-//};
+var LIVERELOAD_PORT = 35729;
+var lrSnippet = require('connect-livereload')({port: LIVERELOAD_PORT});
+var mountFolder = function (connect, dir) {
+    return connect.static(require('path').resolve(dir));
+};
 
 // # Globbing
 // for performance reasons we're only matching one level down:
@@ -34,6 +34,59 @@ module.exports = function (grunt) {
             neuter: {
                 files: ['<%= emberApp.app %>/js/{,*/}*.js'],
                 tasks: ['neuter']
+            },
+            livereload: {
+                options: {
+                    livereload: LIVERELOAD_PORT
+                },
+                files: [
+                    'tmp/scripts/*.js',
+                    '<%= emberApp.app %>/*.html',
+                    '{.tmp,<%= emberApp.app %>}/styles/{,*/}*.css',
+                    '<%= emberApp.app %>/images/{,*/}*.{png,jpg,jpeg,gif,webp,svg}'
+                ]
+            }
+        },
+        connect: {
+            options: {
+                port: 9000,
+                // change this to '0.0.0.0' to access the server from outside
+                hostname: 'localhost'
+            },
+            livereload: {
+                options: {
+                    middleware: function (connect) {
+                        return [
+                            lrSnippet,
+                            mountFolder(connect, 'tmp'),
+                            mountFolder(connect, emberApp.app)
+                        ];
+                    }
+                }
+            },
+            test: {
+                options: {
+                    middleware: function (connect) {
+                        return [
+                            mountFolder(connect, 'test'),
+                            mountFolder(connect, 'tmp')
+                        ];
+                    }
+                }
+            },
+            dist: {
+                options: {
+                    middleware: function (connect) {
+                        return [
+                            mountFolder(connect, emberApp.dist)
+                        ];
+                    }
+                }
+            }
+        },
+        open: {
+            server: {
+                path: 'http://localhost:<%= connect.options.port %>'
             }
         },
         clean: {
@@ -270,7 +323,9 @@ module.exports = function (grunt) {
             'replace:app',
             'concurrent:server',
             'neuter:app',
-            'copy:fonts'
+            'copy:fonts',
+            'connect:livereload',
+            'open',
         ]);
     });
 

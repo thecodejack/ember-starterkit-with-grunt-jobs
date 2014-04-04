@@ -13,8 +13,8 @@ Your Ember.js project is almost ready! Here's how to get started:
 
 - Start writing your app in app folder.
 
-- During development, you can link to js/libs/ember.js to get the
-  unminified version of Ember.js.
+- Add CSS to css/style.css.
 
-- Add CSS to css/style.css
+-  
+
 
